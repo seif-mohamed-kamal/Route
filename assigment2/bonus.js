@@ -3,6 +3,7 @@
  * @param {number} k
  * @return {number}
  */
+// 
 var findKthPositive = function(arr, k) {
     let ans = [];
     let n = arr.length;
