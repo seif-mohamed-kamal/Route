@@ -1,0 +1,38 @@
+create table Suppliers(
+	SupplierID int PRIMARY KEY AUTO_INCREMENT,
+    SupplierName text,
+    ContactNumber text
+);
+
+create table Products(
+	ProductID int PRIMARY KEY AUTO_INCREMENT,
+    ProductName text,
+    Price float,
+    StockQuantity int,
+    SupplierID INT NOT NULL REFERENCES Suppliers(SupplierID)
+);
+
+CREATE table Sales (
+    SaleID int PRIMARY KEY AUTO_INCREMENT,
+    ProductID int NOT NULL REFERENCES Products(ProductID),
+    QuantitySold int NOT NULL,
+    SaleDate DATE NOT NULL
+);
+
+/////////////////////////
+2-  ALTER TABLE Products ADD Category VARCHAR(50);
+3-  ALTER TABLE Products DROP COLUMN Category;
+4-  ALTER TABLE Suppliers MODIFY ContactNumber VARCHAR(15); 
+5-  ALTER TABLE Products MODIFY ProductName VARCHAR(100) NOT NULL;
+6-  a- INSERT INTO Suppliers (SupplierName, ContactNumber) VALUES ('FreshFoods', '01001234567');
+    b- INSERT INTO Products (ProductName, SupplierID, Price, StockQuantity)
+       VALUES ('Milk', 1, 15.00, 50),('Bread', 1, 10.00, 30),('Eggs', 1, 20.00, 40);
+    c- INSERT INTO Sales (ProductID, QuantitySold, SaleDate) VALUES (1, 2, '2025-05-20');
+7-  update Products set Price = 25.00 where ProductName = 'Bread';
+8-  DELETE FROM products where ProductName = 'Eggs';
+9-  SELECT ProductName sum(QuantitySold) AS total_quantity_sold From products 
+    INNER JOIN sales on products.ProductID = sales.ProductID GROUP by ProductName ;
+10- SELECT ProductName , MAX(StockQuantity) AS MAX_STOCK FROM products;
+11- SELECT SupplierName From Suppliers WHERE SupplierName LIKE 'F%';
+12- SELECT ProductName From products WHERE ProductID NOT IN (SELECT ProductID from sales);
+13- SELECT ProductName , SaleDate From products INNER JOIN sales on products.ProductID = sales.ProductID;
