@@ -1,0 +1,139 @@
+
+db.createCollection("books", {
+  validator: {
+    $jsonSchema: {
+      required: ["title"],
+    },
+  },
+});
+
+db.authors.insertOne({
+  name: "Author1",
+  nationality: "British"
+});
+
+db.createCollection("logs", {
+  capped: true,
+  size: 1000,
+  max: 2 
+});
+
+db.books.createIndex({ title: 1 });
+
+db.books.insertOne({
+  title: "Book 1",
+  author: "Ali",
+  year: 1937,
+  genres: ["Science Fantasy", "Adventure"]
+});
+
+db.books.insertMany([
+  {
+    "title": "Future",
+    "author": "George Orwell",
+    "year": 2020,
+    "genres": ["Science Fiction"]
+  },
+  {
+    "title": "To Kill a Mockingbird",
+    "author": "Harper Lee",
+    "year": 1960,
+    "genres": ["Classic", "Fiction"]
+  }
+]
+);
+
+db.logs.insertOne({
+    "book_id":"697b1003095c4d54631ec8f8",
+    "action":"borrowed"
+});
+
+db.books.updateOne(
+  { title: "Future" },
+  { $set: { year: 2022 } }
+);
+
+
+db.books.findOne({ title: "Brave New World" });
+
+db.books.find({
+  year: { $gte: 1990, $lte: 2010 }
+}).toArray();
+
+db.books.find({
+  genres: { $in: ["Science Fiction"] }
+}).toArray();
+
+db.books.find()
+  .sort({ year: -1 })
+  .skip(2)
+  .limit(3)
+  .toArray();
+
+db.books.find({
+  year: { $type: 16 }
+}).toArray();
+
+db.books.find({
+  genres: { $nin: ["Horror"] }
+}).toArray();
+
+db.books.deleteMany({
+  year: { $lt: 2000 }
+});
+
+db.books.find({
+  year: { $gt: 2000 }
+}).sort({ year: -1 }).toArray();
+
+
+db.books.find(
+  { year: { $gt: 2000 } },
+  { title: 1, author: 1, year: 1, _id: 0 }
+).toArray();
+
+db.books.aggregate([
+  { $match: { year: { $gt: 2000 } } },
+  { $project: { title: 1, genres: 1, _id: 0 } },
+  { $unwind: "$genres" }
+]);
+
+db.logs.aggregate([
+  {
+    $lookup: {
+      from: "books",
+      localField: "book_id",
+      foreignField: "_id",
+      as: "book_details"
+    }
+  },
+  {
+    $project: {
+      action: 1,
+      book_details: { title: 1, author: 1, year: 1 },
+      _id: 0
+    }
+  }
+]);
+
+
+db.books.insertMany([
+  {
+    title: "Book A",
+    author: "Author A",
+    year: 1995,
+    genres: ["Horror"]
+  },
+  {
+    title: "Book B",
+    author: "Author B",
+    year: 2005,
+    genres: ["Science Fiction", "Adventure"]
+  },
+  {
+    title: "Book C",
+    author: "Author C",
+    year: 2015,
+    genres: ["Romance"]
+  }
+]);

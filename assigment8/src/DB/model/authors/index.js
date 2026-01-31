@@ -1,0 +1,1 @@
+export * from "./auther.model.js"
