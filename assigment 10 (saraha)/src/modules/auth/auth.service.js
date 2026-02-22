@@ -11,10 +11,13 @@ import jwt from "jsonwebtoken";
 
 import { create, createOne, findOne } from "../../DB/DB.repositry.js";
 import { usermodel } from "../../DB/model/user.model.js";
-import { JWT_SECRET } from "../../../config/config.service.js";
+import {
+  JWT_SECRET,
+  JWT_SECRET_ADMIN,
+} from "../../../config/config.service.js";
 
 export const signup = async (inputs) => {
-  const { firstName, lastName, email, password, phone } = inputs;
+  const { firstName, lastName, email, password, phone ,role} = inputs;
 
   const checkEmail = await findOne({
     model: usermodel,
@@ -32,6 +35,7 @@ export const signup = async (inputs) => {
       firstName,
       lastName,
       email,
+      role,
       password: await generateHash({ plainText: password }),
       phone: await generateEncrypt(phone),
     },
@@ -40,7 +44,7 @@ export const signup = async (inputs) => {
   return user;
 };
 
-export const login = async (inputs) => {
+export const login = async (inputs, issuer) => {
   const { email, password } = inputs;
   const user = await findOne({
     model: usermodel,
@@ -54,15 +58,32 @@ export const login = async (inputs) => {
   ) {
     throw NotFoundException({ message: "Invalid login credintials" });
   }
+  let signeture = undefined;
+  let audience=""
+  // console.log(user.role)
+  switch (user.role) {
+    case 0:
+      signeture = JWT_SECRET_ADMIN;
+      audience = "admin";
+      break;
+
+    default:
+      signeture = JWT_SECRET;
+      audience = "user";
+      break;
+  }
   const token = jwt.sign(
     {
-      id: user._id,
+      sub: user._id,
     },
-      JWT_SECRET,
+    signeture,
     {
-      expiresIn: 60 * 60,
+      expiresIn: "1d",
+      issuer,
+      audience,
+      noTimestamp: true,
     }
   );
   user.phone = await generateDecrypt(user.phone);
-  return { token, user };
+  return { token };
 };

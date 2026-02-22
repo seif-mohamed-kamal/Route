@@ -19,6 +19,8 @@ export const DB_URI = process.env.DB_URI ?? '127.0.0.1'
 
 export const ENCRYPT_KEY = process.env.ENCRYPT_KEY;
 export const JWT_SECRET = process.env.JWT_SECRET;
+export const JWT_SECRET_ADMIN = process.env.JWT_SECRET_ADMIN;
+
 export const JWT_EXPIRES_IN = process.env.JWT_EXPIRES_IN;
 export const APP_GMAIL = process.env.APP_GMAIL;
 export const APP_PASSWORD = process.env.APP_PASSWORD;

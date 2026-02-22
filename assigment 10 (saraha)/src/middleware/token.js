@@ -1,10 +1,10 @@
 import jwt from "jsonwebtoken";
-import { JWT_SECRET } from "../../config/config.service.js";
+import { JWT_SECRET, JWT_SECRET_ADMIN } from "../../config/config.service.js";
 
 export const auth = (req, res, next) => {
   try {
     const authHeader = req.headers.authorization;
-
+    // console.log(authHeader)
     if (!authHeader) {
       throw new Error("Token is required", { cause: { status: 404 } });
     }
@@ -13,8 +13,15 @@ export const auth = (req, res, next) => {
     if (!token) {
       throw new Error("Invalid token format", { cause: { status: 404 } });
     }
+    const decodedHeader = jwt.decode(token);
 
-    const decoded = jwt.verify(token, JWT_SECRET);
+    let secret = JWT_SECRET;
+    
+    if (decodedHeader.aud === "admin") {
+      secret = JWT_SECRET_ADMIN;
+    }
+    
+    const decoded = jwt.verify(token, secret);
 
     req.user = decoded;
     // console.log(req.user)
