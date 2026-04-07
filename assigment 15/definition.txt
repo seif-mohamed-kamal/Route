@@ -1,0 +1,4 @@
+Composition: A strong relationship where the child cannot exist without the parent.
+Aggregation: A weak relationship where the child can exist independently.
+Association: A general relationship where two classes are connected with each other.
+Inheritance: A mechanism where a class acquires the properties and behaviors of another class.
